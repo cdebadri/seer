@@ -6,17 +6,19 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint --fix"
   },
   "dependencies": {
     "@vue/cli": "^4.5.3",
     "core-js": "^3.6.5",
+    "leaflet": "^1.6.0",
     "primeflex": "^2.0.0-rc.1",
     "primeicons": "^4.0.0",
     "primevue": "^2.0.7",
     "register-service-worker": "^1.7.1",
     "vue": "^3.0.0-0",
     "vue-router": "^4.0.0-0",
+    "vue2-leaflet": "^2.5.2",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
