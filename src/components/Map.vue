@@ -29,7 +29,10 @@ export default {
   mounted() {
     this.initMap();
     this.initTileLayers();
-    this.addMarkers();
+    
+    if (this.markers.length > 0) {
+      this.addMarkers();
+    }
   },
   methods: {
     initMap() {
