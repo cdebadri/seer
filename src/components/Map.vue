@@ -29,7 +29,7 @@ export default {
   mounted() {
     this.initMap();
     this.initTileLayers();
-    
+
     if (this.markers.length > 0) {
       this.addMarkers();
     }
