@@ -12,7 +12,9 @@
           />
         </div>
         <div class="row">
-          <Map/>
+          <div class="col" style="height:50vh;">
+            <Map :markers="markers" />
+          </div>
         </div>
         <div class="row" style="height:50vh">
           <Charts/>
@@ -47,6 +49,20 @@ export default {
     updateValue(value) {
       this.updateMapSearchValue(value);
     },
+  },
+  data() {
+    return {
+      markers: [
+        {
+          coordinates: [51.510, -0.08],
+          critical: false,
+        },
+        {
+          coordinates: [51.530, -0.06],
+          critical: true,
+        },
+      ],
+    };
   },
 };
 </script>
