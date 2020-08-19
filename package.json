@@ -12,6 +12,7 @@
     "@vue/cli": "^4.5.3",
     "core-js": "^3.6.5",
     "leaflet": "^1.6.0",
+    "lodash": "^4.17.20",
     "primeflex": "^2.0.0-rc.1",
     "primeicons": "^4.0.0",
     "primevue": "^2.0.7",

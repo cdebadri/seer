@@ -1,0 +1,20 @@
+Tracking page routes:
+
+POST /tracking
+
+req body:
+{
+	searchRadius: number,
+	searchTerm: string,
+	apiKey: string
+}
+
+res body:
+[
+  {
+    name: "BAD",
+    registrationId: "hijibiji234",
+    critical: false,
+    coordinates: [51.60, -0.05]
+  }
+]

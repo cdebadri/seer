@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import home from './Home';
+import tracking from './Tracking';
 
 export default createStore({
   state: {
@@ -10,5 +11,6 @@ export default createStore({
   },
   modules: {
     home,
+    tracking,
   },
 });

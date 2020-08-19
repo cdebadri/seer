@@ -25,6 +25,9 @@ export default {
     zoom: {
       default: 10,
     },
+    triggerOnClick: {
+      type: Function,
+    },
   },
   mounted() {
     this.initMap();
@@ -54,11 +57,17 @@ export default {
           iconSize: [30, 50],
         });
 
-        L.marker(marker.coordinates, { icon, title: `${index}` })
+        const currentMarker = L.marker(marker.coordinates, { icon, title: `${marker.name}` })
           .bindPopup(`
-            <div>${index}</div>
+            <div><b>Name:</b>${marker.name}</div>
+            <div><b>RegistrationID:</b>${marker.registrationId}</div>
           `)
-          .addTo(this.map);
+          .addTo(this.map)
+          .on('click', () => this.triggerOnClick(marker.registrationId));
+
+        if (marker.isSelected) {
+          currentMarker.openPopup();
+        }
       });
     },
   },
