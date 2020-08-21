@@ -3,6 +3,7 @@
 </template>
 
 <script>
+/* eslint-disable no-underscore-dangle */
 import L from 'leaflet';
 import redMarker from '@/assets/map_marker_red.png';
 import blueMarker from '@/assets/map_marker_blue.png';
@@ -28,6 +29,16 @@ export default {
     triggerOnClick: {
       type: Function,
     },
+    deselect: {
+      type: Function,
+    },
+  },
+  watch: {
+    markers() {
+      if (this.markers.length > 0) {
+        this.addMarkers();
+      }
+    },
   },
   mounted() {
     this.initMap();
@@ -51,22 +62,45 @@ export default {
       ).addTo(this.map);
     },
     addMarkers() {
-      this.markers.forEach((marker, index) => {
+      this.markers.forEach((marker) => {
         const icon = L.icon({
           iconUrl: marker.critical ? blueMarker : redMarker,
           iconSize: [30, 50],
         });
 
-        const currentMarker = L.marker(marker.coordinates, { icon, title: `${marker.name}` })
-          .bindPopup(`
+        const currentMarker = L.marker(
+          marker.coordinates,
+          {
+            icon,
+            title: `${marker.name}`,
+          },
+          {
+            autoClose: false,
+            keepInView: true,
+          },
+        )
+          .bindPopup(
+            `
             <div><b>Name:</b>${marker.name}</div>
             <div><b>RegistrationID:</b>${marker.registrationId}</div>
-          `)
-          .addTo(this.map)
-          .on('click', () => this.triggerOnClick(marker.registrationId));
+          `,
+            {
+              closeOnClick: false,
+            },
+          )
+          .on('click', () => {
+            this.triggerOnClick(marker.registrationId);
+          })
+          .addTo(this.map);
 
         if (marker.isSelected) {
           currentMarker.openPopup();
+          /**
+           * as lealfet fires a popupclose event after every click event.
+           * cannot use popupclose for that
+           * */
+
+          currentMarker._popup._closeButton.onclick = this.deselect;
         }
       });
     },

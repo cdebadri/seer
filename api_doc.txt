@@ -1,6 +1,6 @@
 Tracking page routes:
 
-POST /tracking
+POST /tracking (polling)
 
 req body:
 {
@@ -18,3 +18,5 @@ res body:
     coordinates: [51.60, -0.05]
   }
 ]
+
+

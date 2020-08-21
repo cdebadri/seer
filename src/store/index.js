@@ -4,8 +4,14 @@ import tracking from './Tracking';
 
 export default createStore({
   state: {
+    loaded: false,
+    error: false,
   },
   mutations: {
+    pageLoaded(state, { startPolling, error }) {
+      state.loaded = !error || startPolling || state.loaded;
+      state.error = error;
+    },
   },
   actions: {
   },
