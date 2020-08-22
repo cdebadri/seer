@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vue/cli": "^4.5.3",
+    "chart.js": "^2.9.3",
     "core-js": "^3.6.5",
     "leaflet": "^1.6.0",
     "lodash": "^4.17.20",

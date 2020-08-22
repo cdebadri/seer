@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
+import Tracking from '../views/Tracking.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'Tracking',
+    component: Tracking,
   },
   {
     path: '/exceptions',
@@ -26,9 +26,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Messages.vue'),
   },
   {
-    path: '/tracking',
-    name: 'Tracking',
-    component: () => import('../views/Tracking.vue'),
+    path: '/',
+    name: 'Home',
+    component: () => import('../views/Home.vue'),
   },
 ];
 
