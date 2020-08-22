@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="input-group md-form form-sm form-1 p-2 pt-4 shadow">
+    <div class="input-group md-form form-sm form-1 ml-1 p-2 py-2 p-shadow-4">
       <input
-        class="form-control my-0 py-1 amber-border"
+        class="form-control mx-1 p-3 amber-border"
         type="text"
         placeholder="Search"
         aria-label="Search"
@@ -14,12 +14,12 @@
       </div>
     </div>
     <br />
-    <div id="list" style="height: 450px;overflow: auto;">
+    <div id="list" class="p-1" style="height: 450px;overflow: auto;">
       <div
         id="listbox"
         v-for="people in getPeopleList" :key="people.msg"
         v-on:click="activePerson(people)"
-        class="row m-1 p-3 theme-light">
+        class="row my-1 ml-1 p-3 theme-light">
         <h5>{{people.name}}</h5>
       </div>
     </div>

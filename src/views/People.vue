@@ -3,12 +3,12 @@
     <div id="register" class="col-2 p-0">
       <PeopleSearch/>
     </div>
-    <div class="col-4">
+    <div v-if="currentperson !== ''" class="col-4">
       <div class="p-shadow-4">
         <PeopleProfile/>
         </div>
       </div>
-    <div class="col-6">
+    <div v-if="currentperson !== ''" class="col-6">
       <div  class="p-shadow-4">
         <div class="row">
           <SearchBar
@@ -26,7 +26,9 @@
         </div>
       </div>
     </div>
-    <div class="col-4">
+    <div v-if="currentperson === ''" class="col-10" style="color:grey">
+      <h3 class="p-3 pt-5 mt-5">Select a person to see details</h3>
+      <i class="fa fa-search fa-10x" aria-hidden="true"></i>
       </div>
   </div>
 </template>
@@ -46,9 +48,10 @@ export default {
     PeopleSearch, Map, Charts, SearchBar, PeopleProfile,
   },
   computed: {
-    ...mapState([
-      'mapSearchValue',
-    ]),
+    ...mapState({
+      mapSearchValue: (state) => state.tracking.mapSearchValue,
+      currentperson: (state) => state.people.currentperson,
+    }),
   },
   methods: {
     ...mapMutations([
