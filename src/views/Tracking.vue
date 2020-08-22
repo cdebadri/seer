@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-4 p-shadow-4 fullscreen">
         <div
-          class="card"
+          class="card theme-light"
           v-for="people in trackingInfo"
           :key="people.registrationId"
           v-bind:class="{selected: people.isSelected}"
@@ -62,7 +62,7 @@ export default {
   height: 80vh;
 }
 .selected {
-  background-color: blue;
+  background-color: blueviolet;
   color: antiquewhite;
 }
 </style>
