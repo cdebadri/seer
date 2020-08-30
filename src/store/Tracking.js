@@ -7,6 +7,9 @@ export default {
     trackingInfo: [],
     searchRadius: 10,
     searchTerm: '',
+    startPolling: false,
+    loaded: false,
+    error: false,
   }),
   mutations: {
     deSelectMarkers(state) {
@@ -32,9 +35,16 @@ export default {
       state.searchTerm = searchTerm;
       state.searchRadius = searchRadius;
     },
+    pageLoaded(state, { startPolling, error, loaded }) {
+      state.startPolling = startPolling;
+      state.loaded = loaded || startPolling;
+      state.error = error;
+    },
   },
   actions: {
-    getPeopleInformation({ commit }) {
+    getPeopleInformation({ commit, dispatch, state }) {
+      commit('pageLoaded', { startPolling: state.startPolling, error: false, loaded: false });
+
       try {
         let data = api.getPeopleInformation();
         data = data.map((people) => ({
@@ -43,10 +53,13 @@ export default {
         }));
 
         commit('setTrackingInfo', { data });
-        commit('pageLoaded', { startPolling: true, error: false }, { root: true });
+        commit('pageLoaded', { startPolling: true, error: false, loaded: true });
+
+        // needed for polling
+        dispatch('keepPolling', 'tracking/getPeopleInformation', { root: true });
       } catch (error) {
         commit('setTrackingInfo', { data: [] });
-        commit('pageLoaded', { startPolling: false, error: true }, { root: true });
+        commit('pageLoaded', { startPolling: false, error: true, loaded: false });
       }
     },
     selectPerson({ commit }, registrationId) {
