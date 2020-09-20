@@ -29,12 +29,12 @@
 
 <script>
 import Register from '@/components/Register.vue';
-import Button from 'primevue/button';
+//import Button from 'primevue/button';
 
 export default {
   components: {
     Register,
-    Button,
+    //Button,
   },
   data() {
     return {

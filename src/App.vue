@@ -2,6 +2,7 @@
   <div id="app">
     <div id="nav">
       <NavBar />
+      <Notification />
     </div>
     <router-view />
   </div>
@@ -9,11 +10,13 @@
 
 <script>
 import NavBar from '@/components/NavBar.vue';
+import Notification from '@/components/Notification.vue';
 
 export default {
   name: 'App',
   components: {
     NavBar,
+    Notification,
   },
 };
 </script>

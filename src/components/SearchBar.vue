@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import InputText from 'primevue/inputtext';
+//import InputText from 'primevue/inputtext';
 
 export default {
   name: 'SearchBar',
   components: {
-    InputText,
+    //InputText,
   },
   props: [
     'value',

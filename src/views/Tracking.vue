@@ -39,20 +39,16 @@ export default {
   },
   computed: {
     ...mapState({
-      loaded: (state) => state.tracking.loaded,
+      loaded: (state) => state.loaded,
       trackingInfo: (state) => state.tracking.trackingInfo,
     }),
   },
   methods: {
     ...mapActions('tracking', ['getPeopleInformation', 'selectPerson']),
     ...mapMutations('tracking', ['deSelectMarkers']),
-    ...mapActions(['movingFromTab']),
   },
   mounted() {
     this.getPeopleInformation();
-  },
-  unmounted() {
-    this.movingFromTab({ tabName: 'tracking', itemId: 'getPeopleInformation' }); // id has to be given in full
   },
 };
 </script>

@@ -21,7 +21,7 @@ export default {
       default: [],
     },
     center: {
-      default: [51.505, -0.09],
+      default: function () { return [51.505, -0.09] },
     },
     zoom: {
       default: 10,

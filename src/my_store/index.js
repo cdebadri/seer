@@ -1,12 +1,9 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import home from './Home'
-import people from './People'
-import tracking from './Tracking'
+import { createStore } from 'vuex';
+import home from './Home';
+import tracking from './Tracking';
+import people from './People';
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default createStore({
   state: {
     loaded: false,
     error: false,
@@ -23,5 +20,5 @@ export default new Vuex.Store({
     home,
     tracking,
     people,
-  }
-})
+  },
+});
