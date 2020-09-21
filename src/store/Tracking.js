@@ -8,6 +8,9 @@ export default {
     trackingInfo: [],
     searchRadius: 10,
     searchTerm: '',
+    startPolling: false,
+    loaded: false,
+    error: false,
   }),
   mutations: {
     deSelectMarkers(state) {
@@ -33,9 +36,15 @@ export default {
       state.searchTerm = searchTerm;
       state.searchRadius = searchRadius;
     },
+    pageLoaded(state, { startPolling, error, loaded }) {
+      state.startPolling = startPolling;
+      state.loaded = loaded || startPolling;
+      state.error = error;
+    },
   },
   actions: {
-    async getPeopleInformation({ commit }) {
+    async getPeopleInformation({ commit, dispatch, state }) {
+      commit('pageLoaded', { startPolling: state.startPolling, error: false, loaded: false });
       try {
         let data = await api.getPeopleInformation();
         data = await data.json();
@@ -45,7 +54,7 @@ export default {
           if(_.has(people, 'tracking.locations')) {
             const recentLocation = people.tracking.locations.slice(-1)[0];
             const coordinates = [Number(recentLocation.latitude), Number(recentLocation.longitude)]
-            debugger;
+            
             sanitizedData.push({
               ...people,
               coordinates,
@@ -55,10 +64,13 @@ export default {
         });
 
         commit('setTrackingInfo', { data: sanitizedData });
-        commit('pageLoaded', { startPolling: true, error: false }, { root: true });
+        commit('pageLoaded', { startPolling: true, error: false, loaded: true });
+
+        // needed for polling
+        dispatch('keepPolling', 'tracking/getPeopleInformation', { root: true });
       } catch (error) {
         commit('setTrackingInfo', { data: [] });
-        commit('pageLoaded', { startPolling: false, error: true }, { root: true });
+        commit('pageLoaded', { startPolling: false, error: true, loaded: false });
       }
     },
     selectPerson({ commit }, email) {
