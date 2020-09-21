@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "jquery": "^3.5.1",
     "leaflet": "^1.7.1",
+    "lodash": "^4.17.20",
     "primeflex": "^2.0.0",
     "primeicons": "^4.0.0",
     "primevue": "^2.0.8",

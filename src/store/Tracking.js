@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import * as api from '../api';
+import _ from 'lodash';
 
 export default {
   namespaced: true,
@@ -17,10 +18,10 @@ export default {
 
       state.trackingInfo = trackingInfo;
     },
-    selectMarker(state, registrationId) {
+    selectMarker(state, email) {
       const trackingInfo = state.trackingInfo.map((people) => ({
         ...people,
-        isSelected: people.registrationId === registrationId,
+        isSelected: people.email === email,
       }));
 
       state.trackingInfo = trackingInfo;
@@ -34,24 +35,35 @@ export default {
     },
   },
   actions: {
-    getPeopleInformation({ commit }) {
+    async getPeopleInformation({ commit }) {
       try {
-        let data = api.getPeopleInformation();
-        data = data.map((people) => ({
-          ...people,
-          isSelected: false,
-        }));
+        let data = await api.getPeopleInformation();
+        data = await data.json();
+        const sanitizedData = [];
+        
+        data.forEach((people) => {
+          if(_.has(people, 'tracking.locations')) {
+            const recentLocation = people.tracking.locations.slice(-1)[0];
+            const coordinates = [Number(recentLocation.latitude), Number(recentLocation.longitude)]
+            debugger;
+            sanitizedData.push({
+              ...people,
+              coordinates,
+              isSelected: false
+            });
+          }
+        });
 
-        commit('setTrackingInfo', { data });
+        commit('setTrackingInfo', { data: sanitizedData });
         commit('pageLoaded', { startPolling: true, error: false }, { root: true });
       } catch (error) {
         commit('setTrackingInfo', { data: [] });
         commit('pageLoaded', { startPolling: false, error: true }, { root: true });
       }
     },
-    selectPerson({ commit }, registrationId) {
+    selectPerson({ commit }, email) {
       commit('deSelectMarkers');
-      commit('selectMarker', registrationId);
+      commit('selectMarker', email);
     },
   },
 };
