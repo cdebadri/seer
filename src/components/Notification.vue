@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Button label="Success" class="p-button-success" @click="showSuccess" />
     <Toast position="bottom-right" @click="openNotification"/>
   </div>
 </template>

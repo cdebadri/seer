@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import * as api from '../api';
+import _ from 'lodash';
 
 export default {
   namespaced: true,
@@ -7,6 +8,9 @@ export default {
     trackingInfo: [],
     searchRadius: 10,
     searchTerm: '',
+    startPolling: false,
+    loaded: false,
+    error: false,
   }),
   mutations: {
     deSelectMarkers(state) {
@@ -17,10 +21,10 @@ export default {
 
       state.trackingInfo = trackingInfo;
     },
-    selectMarker(state, registrationId) {
+    selectMarker(state, email) {
       const trackingInfo = state.trackingInfo.map((people) => ({
         ...people,
-        isSelected: people.registrationId === registrationId,
+        isSelected: people.email === email,
       }));
 
       state.trackingInfo = trackingInfo;
@@ -32,26 +36,46 @@ export default {
       state.searchTerm = searchTerm;
       state.searchRadius = searchRadius;
     },
+    pageLoaded(state, { startPolling, error, loaded }) {
+      state.startPolling = startPolling;
+      state.loaded = loaded || startPolling;
+      state.error = error;
+    },
   },
   actions: {
-    getPeopleInformation({ commit }) {
+    async getPeopleInformation({ commit, dispatch, state }) {
+      commit('pageLoaded', { startPolling: state.startPolling, error: false, loaded: false });
       try {
-        let data = api.getPeopleInformation();
-        data = data.map((people) => ({
-          ...people,
-          isSelected: false,
-        }));
+        let data = await api.getPeopleInformation();
+        data = await data.json();
+        const sanitizedData = [];
+        
+        data.forEach((people) => {
+          if(_.has(people, 'tracking.locations')) {
+            const recentLocation = people.tracking.locations.slice(-1)[0];
+            const coordinates = [Number(recentLocation.latitude), Number(recentLocation.longitude)]
+            
+            sanitizedData.push({
+              ...people,
+              coordinates,
+              isSelected: false
+            });
+          }
+        });
 
-        commit('setTrackingInfo', { data });
-        commit('pageLoaded', { startPolling: true, error: false }, { root: true });
+        commit('setTrackingInfo', { data: sanitizedData });
+        commit('pageLoaded', { startPolling: true, error: false, loaded: true });
+
+        // needed for polling
+        dispatch('keepPolling', 'tracking/getPeopleInformation', { root: true });
       } catch (error) {
         commit('setTrackingInfo', { data: [] });
-        commit('pageLoaded', { startPolling: false, error: true }, { root: true });
+        commit('pageLoaded', { startPolling: false, error: true, loaded: false });
       }
     },
-    selectPerson({ commit }, registrationId) {
+    selectPerson({ commit }, email) {
       commit('deSelectMarkers');
-      commit('selectMarker', registrationId);
+      commit('selectMarker', email);
     },
   },
 };

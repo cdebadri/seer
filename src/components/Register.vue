@@ -1,5 +1,5 @@
 <template>
-  <div class="card col-6 note theme-light p-shadow-4">
+  <div v-if="!showLoader" class="card col-6 note theme-light p-shadow-4">
     <Button
       icon="pi pi-times"
       class="p-button-rounded p-button-secondary p-button-outlined closebtn"
@@ -13,40 +13,15 @@
         <div class="form-group">
           <input
             type="text"
-            v-model="register.registrationId"
             class="form-control"
-            placeholder="Rgistration ID *"
+            v-model="register.email"
+            placeholder="Your Email *"
             value
           />
         </div>
-        <button type="button" v-on:click="showTab"
-        class="btnSubmit btn btn-primary">Proceed</button>
-        <ul v-if="tabshow===true" class="nav nav-tabs">
-          <li class="active">
-            <span id="pill1" data-toggle="pill" href="#home">Personal</span>
-          </li>
-          <li>
-            <span id="pill2" data-toggle="pill" href="#menu1">Address</span>
-          </li>
-          <li>
-            <span id="pill3" data-toggle="pill" href="#menu2">Symptoms</span>
-          </li>
-          <li>
-            <span id="pill4" data-toggle="pill" href="#menu3">Finish</span>
-          </li>
-        </ul>
-
+        <button v-if="!tabshow" type="button" v-on:click="showTab" class="btnSubmit btn btn-primary">Proceed</button>
         <div v-if="tabshow===true" class="tab-content">
           <div id="home" class="tab-pane fade in active show">
-            <div class="form-group">
-              <input
-                type="text"
-                class="form-control"
-                v-model="register.email"
-                placeholder="Your Email *"
-                value
-              />
-            </div>
             <div class="form-group">
               <input
                 type="text"
@@ -69,86 +44,103 @@
               <input
                 type="text"
                 class="form-control"
-                v-model="register.age"
-                placeholder="Your Age *"
+                placeholder="Address *"
+                v-model="register.address"
                 value
               />
             </div>
-          </div>
-          <div id="menu1" class="tab-pane fade">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Address *" value />
-            </div>
-          </div>
-          <div id="menu2" class="tab-pane fade">
-            <div class="form-group">
-              <input
-                type="text"
-                class="form-control"
-                v-model="register.symptoms"
-                placeholder="Symptoms *"
-                value
-              />
-              <!-- Multiselect dropdown -->
-              <!-- <MultiSelect v-model="selectedCities" :options="cities"
-              optionLabel="name" placeholder="Select a City" /> -->
-            </div>
-          </div>
-          <div id="menu3" class="tab-pane fade">
-            <h3>Finish</h3>
-            <button type="button" class="btnSubmit btn btn-primary">Proceed</button>
+            <button type="button" class="btnSubmit btn btn-primary" @click="addUserDetails">Proceed</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <div v-else>
+    <progress-spinner />
+  </div>
 </template>
 
 <script>
-import Button from 'primevue/button';
+import Button from "primevue/button";
 // import MultiSelect from 'primevue/multiselect';
+import { getUser, addUserDetails, geocodeAddress } from "../api";
+import ProgressSpinner from "primevue/progressspinner";
 
 export default {
   components: {
     Button,
     // MultiSelect,
+    ProgressSpinner
   },
   data() {
     return {
-      tabshow: 'false',
+      tabshow: "false",
       selectedCities: null,
       cities: [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' },
+        { name: "New York", code: "NY" },
+        { name: "Rome", code: "RM" },
+        { name: "London", code: "LDN" },
+        { name: "Istanbul", code: "IST" },
+        { name: "Paris", code: "PRS" }
       ],
       register: {
-        registrationId: '',
-        name: '',
-        email: '',
-        phone: '',
-        age: '',
-        address: '',
-        symptoms: '',
-        travel: '',
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
       },
+      showLoader: false
     };
   },
   computed: {},
   methods: {
     closeNav() {
-      document.getElementById('mySidenav').style.width = '0';
+      document.getElementById("mySidenav").style.width = "0";
     },
     tabChange() {},
     showTab() {
       // call api for registration id check and show tabs
-      this.tabshow = true;
+      this.showLoader = true;
+      getUser(this.register.email)
+        .then(response => response.json())
+        .then(response => {
+          if (response) {
+            this.tabshow = true;
+            this.register.name = response.name;
+            this.register.phone = response.phone;
+          }
+          this.showLoader = false;
+        });
     },
-  },
-};
+    async addUserDetails() {
+      try {
+        let response = await geocodeAddress(this.register.address);
+        let responseJson = await response.json();
+        const location = {
+          latitude: Number(responseJson[0].lat),
+          longitude: Number(responseJson[0].lon)
+        };
+        const details = {
+          name: this.register.name,
+          phone: this.register.phone,
+          location
+        };
+        response = await addUserDetails(details, this.register.email);
+        responseJson = await response.json();
 
+        this.init();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    init() {
+      this.tabshow = false;
+      Object.keys(this.register).forEach(key => {
+        this.register[key] = "";
+      });
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -210,6 +202,6 @@ li {
 }
 
 .p-multiselect {
-    min-width: 15rem;
+  min-width: 15rem;
 }
 </style>

@@ -6,9 +6,6 @@
       <router-link class="nav-link" to="/">Tracking</router-link>
     </li>
     <li class="nav-item">
-      <router-link class="nav-link" to="/exceptions">Exceptions</router-link>
-    </li>
-    <li class="nav-item">
       <router-link class="nav-link" to="/people">People</router-link>
     </li>
     <!-- <li class="nav-item">

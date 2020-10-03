@@ -5,11 +5,11 @@
         <div
           class="card theme-light"
           v-for="people in trackingInfo"
-          :key="people.registrationId"
+          :key="people.email"
           v-bind:class="{selected: people.isSelected}"
-          v-on:click="() => selectPerson(people.registrationId)"
+          v-on:click="() => selectPerson(people.email)"
         >
-          <div class="card-title">{{ people.registrationId }}</div>
+          <div class="card-title">{{ people.email }}</div>
           <div class="card-text">
             <div>{{ people.name }}</div>
           </div>
@@ -39,16 +39,20 @@ export default {
   },
   computed: {
     ...mapState({
-      loaded: (state) => state.loaded,
+      loaded: (state) => state.tracking.loaded,
       trackingInfo: (state) => state.tracking.trackingInfo,
     }),
   },
   methods: {
     ...mapActions('tracking', ['getPeopleInformation', 'selectPerson']),
     ...mapMutations('tracking', ['deSelectMarkers']),
+    ...mapActions(['movingFromTab']),
   },
   mounted() {
     this.getPeopleInformation();
+  },
+  unmounted() {
+    this.movingFromTab({ tabName: 'tracking', itemId: 'getPeopleInformation' }); // id has to be given in full
   },
 };
 </script>

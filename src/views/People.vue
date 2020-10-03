@@ -1,5 +1,5 @@
 <template>
-  <div class="row page">
+  <div v-if="loaded" class="row page">
     <div id="register" class="col-2 p-0">
       <PeopleSearch/>
     </div>
@@ -31,6 +31,11 @@
       <i class="fa fa-search fa-10x" aria-hidden="true"></i>
       </div>
   </div>
+  <div v-else>
+    <div class="fullscreen">
+      <progress-spinner />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -40,39 +45,47 @@ import PeopleProfile from '@/components/PeopleProfile.vue';
 import Map from '@/components/Map.vue';
 import Charts from '@/components/Charts.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations,mapActions } from 'vuex';
+import ProgressSpinner from 'primevue/progressspinner';
+import _ from 'lodash';
 
 export default {
   name: 'People',
   components: {
-    PeopleSearch, Map, Charts, SearchBar, PeopleProfile,
+    PeopleSearch, Map, Charts, SearchBar, PeopleProfile, ProgressSpinner
   },
   computed: {
     ...mapState({
       mapSearchValue: (state) => state.tracking.mapSearchValue,
       currentperson: (state) => state.people.currentperson,
+      loaded: (state) => state.people.loaded,
     }),
   },
   methods: {
     ...mapMutations([
       'updateMapSearchValue',
     ]),
+    ...mapActions(['getAllPeople']),
     updateValue(value) {
       this.updateMapSearchValue(value);
     },
   },
+  mounted() {
+    this.getAllPeople();
+  },
+  watch: {
+    currentperson() {
+      if(this.currentperson && _.has(this.currentperson, 'tracking.locations')) {
+        this.markers = this.currentperson.tracking.locations.map(item => ({
+          coordinates: [Number(item.latitude), Number(item.longitude)],
+          critical: false
+        }));
+      }
+    }
+  },
   data() {
     return {
-      markers: [
-        {
-          coordinates: [51.510, -0.08],
-          critical: false,
-        },
-        {
-          coordinates: [51.530, -0.06],
-          critical: true,
-        },
-      ],
+      markers: [],
     };
   },
 };
@@ -83,5 +96,8 @@ export default {
 .row {
   margin: 5px;
   padding: 5px;
+}
+.fullscreen {
+  height: 80vh;
 }
 </style>

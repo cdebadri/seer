@@ -37,6 +37,7 @@ export default {
     markers() {
       if (this.markers.length > 0) {
         this.addMarkers();
+        this.center = this.markers[0];
       }
     },
   },
@@ -53,7 +54,7 @@ export default {
       this.map = L.map('map', {
         center: this.center,
         zoom: this.zoom,
-        minZoom: 5,
+        maxZoom: 5,
       });
     },
     initTileLayers() {
@@ -62,6 +63,7 @@ export default {
       ).addTo(this.map);
     },
     addMarkers() {
+      const bounds = L.latLngBounds();
       this.markers.forEach((marker) => {
         const icon = L.icon({
           iconUrl: marker.critical ? blueMarker : redMarker,
@@ -82,14 +84,14 @@ export default {
           .bindPopup(
             `
             <div><b>Name:</b>${marker.name}</div>
-            <div><b>RegistrationID:</b>${marker.registrationId}</div>
+            <div><b>email:</b>${marker.email}</div>
           `,
             {
               closeOnClick: false,
             },
           )
           .on('click', () => {
-            this.triggerOnClick(marker.registrationId);
+            this.triggerOnClick(marker.email);
           })
           .addTo(this.map);
 
@@ -102,7 +104,10 @@ export default {
 
           currentMarker._popup._closeButton.onclick = this.deselect;
         }
+        bounds.extend(marker.coordinates);
       });
+
+      this.map.fitBounds(bounds);
     },
   },
 };

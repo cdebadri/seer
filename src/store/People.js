@@ -1,42 +1,40 @@
+import * as api from '../api';
+import _ from 'lodash';
+
 export default {
   state: {
-    people: [
-      {
-        name: 'Pim',
-        age: '40',
-        email: 'pim@gmail.com',
-        phone: '1213141516',
-        address: 'India',
-        symptoms: ['Fever', 'Dry cough', 'Difficulty breathing', 'Runny nose'],
-      },
-      {
-        name: 'Joe',
-        age: '50',
-        email: 'joe@gmail.com',
-        phone: '1213141517',
-        address: 'India',
-        symptoms: ['Fever', 'Dry cough', 'Difficulty breathing', 'Runny nose'],
-      },
-      {
-        name: 'Mark',
-        age: '46',
-        email: 'mark@gmail.com',
-        phone: '1213141518',
-        address: 'India',
-        symptoms: ['Fever', 'Dry cough', 'Difficulty breathing', 'Runny nose'],
-      },
-    ],
-    currentperson: '',
+    people: [],
+    currentperson: {},
+    loaded: false,
   },
   mutations: {
     SET_ACTIVE_PERSON(state, currentperson) {
       state.currentperson = currentperson;
     },
+    startAPIcall(state) {
+      state.loaded = false;
+    }
   },
   actions: {
     activePerson(context, currentperson) {
       context.commit('SET_ACTIVE_PERSON', currentperson);
     },
+    async getAllPeople({ commit, state }) {
+      let data = await api.getPeopleInformation();
+      data = await data.json();
+      const sanitizedData = [];
+      data.forEach(item => {
+        if(_.has(item, 'tracking.locations')) {
+          sanitizedData.push(item);
+        }
+      })
+      state.people = sanitizedData;
+      state.loaded = true;
+      
+      if(data.length > 0) {
+        commit('SET_ACTIVE_PERSON', data[0])
+      }
+    }
   },
   getters: {
   },
