@@ -1,4 +1,5 @@
 <template>
+<br>
   <div id="app">
     <div id="nav">
       <NavBar />
